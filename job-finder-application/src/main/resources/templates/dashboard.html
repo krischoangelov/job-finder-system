@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Dashboard')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="dashboard-container container">
+
+    <h1 class="mb-4">
+        Welcome, <span th:text="${user.firstName}"></span>!
+    </h1>
+
+    <div th:replace="~{fragments/messages :: messages}"></div>
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <h2 th:text="${user.createdJobs.size()}"></h2>
+            <p>Jobs Posted</p>
+        </div>
+
+        <div class="stat-card">
+            <h2 th:text="${user.jobApplications.size()}"></h2>
+            <p>Applications</p>
+        </div>
+
+        <div class="stat-card">
+            <h2 th:text="${user.skills.size()}"></h2>
+            <p>Skills</p>
+        </div>
+
+    </div>
+
+    <div class="section-title">
+        <h3>Recent Job Offers</h3>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-4 mb-3"
+             th:each="job : ${user.createdJobs}">
+
+            <div class="card-custom">
+
+                <h5 th:text="${job.title}">
+                    Java Developer
+                </h5>
+
+                <p th:text="${job.company}">
+                    Company
+                </p>
+
+                <a class="btn btn-primary"
+                   th:href="@{/jobs/{id}(id=${job.id})}">
+                    View Details
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

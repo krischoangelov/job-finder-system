@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Job Listings')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="jobs-container container">
+
+    <h1 class="mb-4">Available Job Offers</h1>
+
+    <div class="mb-4" th:if="${isRecruiter}">
+        <a class="btn btn-success" th:href="@{/jobs/create}">
+            Create New Job Offer
+        </a>
+    </div>
+
+    <div class="jobs-grid">
+
+        <div class="job-card" th:each="jobOffer : ${jobs}">
+
+            <h3 th:text="${jobOffer.title}">Senior Java Developer</h3>
+
+            <p>
+                <strong>Company:</strong>
+                <span th:text="${jobOffer.company}">Company</span>
+            </p>
+
+            <p>
+                <strong>Location:</strong>
+                <span th:text="${jobOffer.location}">Sofia</span>
+            </p>
+
+            <p>
+                <strong>Salary:</strong>
+                <span th:text="${jobOffer.salary}">5000</span>
+            </p>
+
+            <p>
+                <strong>Deadline:</strong>
+                <span th:text="${jobOffer.deadline}">2026-01-01</span>
+            </p>
+
+            <div class="job-actions">
+
+                <a class="btn btn-primary"
+                   th:href="@{/jobs/{id}(id=${jobOffer.id})}">
+                    View
+                </a>
+
+                <a class="btn btn-success"
+                   th:if="${isCandidate}"
+                   th:href="@{/applications/create/{id}(id=${jobOffer.id})}">
+                    Apply
+                </a>
+
+                <a class="btn btn-warning"
+                   th:if="${isRecruiter}"
+                   th:href="@{/jobs/{id}/edit(id=${jobOffer.id})}">
+                    Edit
+                </a>
+
+                <form th:if="${isRecruiter}"
+                      th:action="@{/jobs/{id}/delete(id=${jobOffer.id})}"
+                      method="post"
+                      class="d-inline">
+
+                    <button type="submit" class="btn btn-danger">
+                        Delete
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

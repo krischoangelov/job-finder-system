@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Application Details')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container py-4">
+
+    <div class="job-details-card">
+
+        <h2>Application Details</h2>
+
+        <hr>
+
+        <p>
+            <strong>Job:</strong>
+            <span th:text="${jobApplication.jobOffer.title}"></span>
+        </p>
+
+        <p>
+            <strong>Candidate:</strong>
+            <span th:text="${jobApplication.candidate.username}"></span>
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            <span th:text="${jobApplication.status}"></span>
+        </p>
+
+        <p>
+            <strong>Applied On:</strong>
+            <span th:text="${#temporals.format(jobApplication.appliedAt,'dd-MM-yyyy HH:mm')}"></span>
+        </p>
+
+        <h4 class="mt-4">Motivation Letter</h4>
+
+        <p th:text="${jobApplication.motivationLetter}"></p>
+
+        <hr>
+
+        <div class="mt-3">
+
+            <form th:if="${isRecruiter}"
+                  th:action="@{/applications/{id}/accept(id=${jobApplication.id})}"
+                  method="post"
+                  class="d-inline">
+
+                <button class="btn btn-success">
+                    Accept
+                </button>
+
+            </form>
+
+            <form th:if="${isRecruiter}"
+                  th:action="@{/applications/{id}/reject(id=${jobApplication.id})}"
+                  method="post"
+                  class="d-inline">
+
+                <button class="btn btn-danger">
+                    Reject
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

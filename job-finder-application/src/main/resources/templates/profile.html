@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Profile')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container">
+
+    <div class="form-container">
+
+        <h2 class="form-title">
+            My Profile
+        </h2>
+
+        <div th:replace="~{fragments/messages :: messages}"></div>
+
+        <form th:action="@{/profile}"
+              th:object="${userDTO}"
+              method="post">
+
+            <div class="form-group">
+
+                <label>Username</label>
+
+                <input type="text"
+                       class="form-control"
+                       th:field="*{username}">
+
+                <span class="validation-error"
+                      th:errors="*{username}">
+                </span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Email</label>
+
+                <input type="email"
+                       class="form-control"
+                       th:field="*{email}">
+
+                <span class="validation-error"
+                      th:errors="*{email}">
+                </span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>First Name</label>
+
+                <input type="text"
+                       class="form-control"
+                       th:field="*{firstName}">
+
+                <span class="validation-error"
+                      th:errors="*{firstName}">
+                </span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Last Name</label>
+
+                <input type="text"
+                       class="form-control"
+                       th:field="*{lastName}">
+
+                <span class="validation-error"
+                      th:errors="*{lastName}">
+                </span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Role</label>
+
+                <input type="text"
+                       class="form-control"
+                       th:value="${userDTO.role}"
+                       readonly>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Member Since</label>
+
+                <input type="text"
+                       class="form-control"
+                       th:value="${#temporals.format(userDTO.createdOn, 'dd-MM-yyyy')}"
+                       readonly>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary mt-3">
+
+                Update Profile
+
+            </button>
+
+        </form>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

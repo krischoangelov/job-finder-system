@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Skills')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container py-4">
+
+    <div class="d-flex justify-content-between mb-4">
+
+        <h1>My Skills</h1>
+
+        <a class="btn btn-success"
+           th:href="@{/skills/create}">
+            Add Skill
+        </a>
+
+    </div>
+
+    <table class="table table-striped">
+
+        <thead>
+        <tr>
+            <th>Skill</th>
+            <th>Level</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="skill : ${skills}">
+
+            <td th:text="${skill.name}"></td>
+
+            <td th:text="${skill.level}"></td>
+
+            <td>
+
+                <a class="btn btn-warning btn-sm"
+                   th:href="@{/skills/{id}/edit(id=${skill.id})}">
+                    Edit
+                </a>
+
+                <form method="post"
+                      th:action="@{/skills/{id}/delete(id=${skill.id})}"
+                      class="d-inline">
+
+                    <button class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+
+                </form>
+
+            </td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

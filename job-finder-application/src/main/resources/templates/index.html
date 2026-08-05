@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('SkillBridge')}"></head>
+
+<body>
+
+<main>
+
+    <section class="hero">
+
+        <div class="hero-overlay">
+
+            <div class="container">
+
+                <div class="hero-content text-center">
+
+                    <h1>Welcome to SkillBridge</h1>
+
+                    <p>
+                        Connect with employers, discover opportunities,
+                        and build your professional future.
+                    </p>
+
+                    <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+                        <a th:href="@{/login}"
+                           class="btn btn-primary btn-lg px-5 py-3">
+                            Login
+                        </a>
+                        <a th:href="@{/register}"
+                           class="btn btn-success btn-lg px-5 py-3">
+                            Register
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

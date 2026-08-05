@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Job Details')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container">
+
+    <div class="job-details-card">
+
+        <h1 th:text="${job.title}">
+            Java Developer
+        </h1>
+
+        <hr>
+
+        <p>
+            <strong>Company:</strong>
+            <span th:text="${job.company}"></span>
+        </p>
+
+        <p>
+            <strong>Location:</strong>
+            <span th:text="${job.location}"></span>
+        </p>
+
+        <p>
+            <strong>Employment Type:</strong>
+            <span th:text="${job.type}"></span>
+        </p>
+
+        <p>
+            <strong>Salary:</strong>
+            <span th:text="${job.salary}"></span>
+        </p>
+
+        <p>
+            <strong>Deadline:</strong>
+            <span th:text="${job.deadline}"></span>
+        </p>
+
+        <hr>
+
+        <h4>Description</h4>
+
+        <p th:text="${job.description}">
+            Job description...
+        </p>
+
+        <div class="mt-4">
+
+            <a th:if="${isCandidate}"
+               class="btn btn-success"
+               th:href="@{/applications/create/{id}(id=${job.id})}">
+                Apply Now
+            </a>
+
+            <a th:if="${isRecruiter}"
+               class="btn btn-warning"
+               th:href="@{/jobs/{id}/edit(id=${job.id})}">
+                Edit
+            </a>
+
+            <form th:if="${isRecruiter}"
+                  th:action="@{/jobs/{id}/delete(id=${job.id})}"
+                  method="post"
+                  class="d-inline">
+
+                <button class="btn btn-danger"
+                        type="submit">
+                    Delete
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

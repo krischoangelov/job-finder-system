@@ -1,0 +1,90 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f7fb;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+main {
+    flex: 1;
+}
+
+.container-custom {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* NAVBAR */
+
+.custom-navbar {
+    background-color: #1f2937;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: white !important;
+}
+
+.nav-link:hover {
+    color: #60a5fa !important;
+}
+
+/* HERO */
+
+.hero {
+    min-height: 80vh;
+    background-image: url("/images/hero.jpg");
+    background-position: center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+}
+
+.hero-overlay {
+    width: 100%;
+    background-color: rgba(0,0,0,0.55);
+    padding: 6rem 0;
+}
+
+.hero-content {
+    color: white;
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.hero-content p {
+    font-size: 1.25rem;
+}
+
+/* CARDS */
+
+.card-custom {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 0 12px rgba(0,0,0,0.08);
+}
+
+/* FOOTER */
+
+.footer {
+    background-color: #1f2937;
+    color: white;
+    padding: 2rem;
+    margin-top: 3rem;
+}

@@ -1,0 +1,106 @@
+/* =========================
+   CSS RESET
+   ========================= */
+
+/* Box sizing */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Remove default margins */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* Improve text rendering */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    line-height: 1.5;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Media defaults */
+
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+/* Form elements inherit fonts */
+
+input,
+button,
+textarea,
+select {
+    font: inherit;
+}
+
+/* Avoid text overflow */
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    overflow-wrap: break-word;
+}
+
+/* Links */
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Lists */
+
+ul,
+ol {
+    list-style: none;
+}
+
+/* Tables */
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+/* Buttons */
+
+button {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+/* Textareas */
+
+textarea {
+    resize: vertical;
+}
+
+/* Root stacking context */
+
+#root,
+#__next {
+    isolation: isolate;
+}

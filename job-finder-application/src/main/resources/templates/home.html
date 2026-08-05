@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Home')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main>
+
+    <section class="container py-5">
+
+        <h1>
+            Welcome,
+            <span th:text="${user.username}">
+                User
+            </span>
+            !
+        </h1>
+
+        <p class="lead">
+            Your gateway to career opportunities.
+        </p>
+
+    </section>
+
+    <section class="container">
+
+        <div class="row">
+
+            <div class="col-md-4">
+
+                <div class="card-custom">
+
+                    <h3>Browse Jobs</h3>
+
+                    <p>
+                        Discover available job opportunities.
+                    </p>
+
+                    <a class="btn btn-primary"
+                       th:href="@{/jobs}">
+                        View Jobs
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card-custom">
+
+                    <h3>My Applications</h3>
+
+                    <p>
+                        Track your submitted applications.
+                    </p>
+
+                    <a class="btn btn-primary"
+                       th:href="@{/applications}">
+                        Applications
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card-custom">
+
+                    <h3>My Skills</h3>
+
+                    <p>
+                        Manage your professional skills.
+                    </p>
+
+                    <a class="btn btn-primary"
+                       th:href="@{/skills}">
+                        Skills
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

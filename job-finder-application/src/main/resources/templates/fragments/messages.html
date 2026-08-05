@@ -1,0 +1,17 @@
+<div th:fragment="messages">
+
+    <div th:if="${successMessage}"
+         class="alert alert-success">
+
+        <span th:text="${successMessage}"></span>
+
+    </div>
+
+    <div th:if="${errorMessage}"
+         class="alert alert-danger">
+
+        <span th:text="${errorMessage}"></span>
+
+    </div>
+
+</div>
