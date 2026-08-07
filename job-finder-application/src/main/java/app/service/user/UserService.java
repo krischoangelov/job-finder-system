@@ -1,10 +1,13 @@
 package app.service.user;
 
+import app.model.dto.jobapplication.JobApplicationDTO;
 import app.model.dto.user.UserDTO;
 import app.model.dto.user.UserLoginRequestDTO;
 import app.model.dto.user.UserRegisterRequestDTO;
 import app.model.dto.user.UserUpdateProfileRequest;
+import app.model.entity.jobapplication.JobApplication;
 import app.model.entity.user.User;
+import app.model.enums.UserRole;
 import app.repository.user.UserRepository;
 import app.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,4 +86,45 @@ public class UserService {
 
         return Mapper.toUserDTO(userRepository.save(user));
     }
+
+    public List<UserDTO> getAllCandidatesByRecruiter(UUID recruiterId) {
+        User recruiter = userRepository.findById(recruiterId)
+                .orElseThrow(
+                        () -> new RuntimeException("Recruiter with the searched ID does not exist")
+                );
+
+        if (!recruiter.getRole().equals(UserRole.RECRUITER)) {
+            throw new RuntimeException("Only recruiters can view candidates");
+        }
+
+
+
+        return recruiter.getCreatedJobs()
+                .stream()
+                .flatMap(jobOffer -> jobOffer.getJobApplications().stream())
+                .map(JobApplication::getCandidate)
+                .map(candidate -> mapCandidateForRecruiter(candidate, recruiterId))
+                .toList();
+    }
+
+    private UserDTO mapCandidateForRecruiter(User candidate, UUID recruiterId) {
+
+        UserDTO candidateDTO = Mapper.toUserDTO(candidate);
+
+        List<JobApplicationDTO> recruiterApplications = candidate.getJobApplications()
+                .stream()
+                .filter(application ->
+                        application.getJobOffer()
+                                .getRecruiter()
+                                .getId()
+                                .equals(recruiterId))
+                .map(Mapper::toJobApplicationDTO)
+                .toList();
+
+        candidateDTO.setJobApplications(recruiterApplications);
+
+        return candidateDTO;
+    }
+
+
 }

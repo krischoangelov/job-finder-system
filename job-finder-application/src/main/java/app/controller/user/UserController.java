@@ -2,12 +2,14 @@ package app.controller.user;
 
 import app.model.dto.user.UserDTO;
 import app.model.dto.user.UserUpdateProfileRequest;
+import app.model.enums.UserRole;
 import app.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -59,6 +61,26 @@ public class UserController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("dashboard");
         modelAndView.addObject("user", user);
+
+        return modelAndView;
+    }
+
+    @GetMapping("/candidates")
+    public ModelAndView getCandidatesPage(HttpSession httpSession) {
+
+        UUID userId = (UUID) httpSession.getAttribute("user_id");
+
+        UserDTO currentUser = userService.getById(userId);
+
+        if (!currentUser.getRole().equals(UserRole.RECRUITER)) {
+            throw new RuntimeException("Only recruiters can view candidates");
+        }
+
+        List<UserDTO> candidates = userService.getAllCandidatesByRecruiter(userId);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("candidates");
+        modelAndView.addObject("candidates", candidates);
 
         return modelAndView;
     }

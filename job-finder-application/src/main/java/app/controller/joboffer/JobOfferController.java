@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,12 +31,19 @@ public class JobOfferController {
     public ModelAndView getJobOffersPage(HttpSession httpSession) {
         UUID userId = (UUID) httpSession.getAttribute("user_id");
         UserDTO user = userService.getById(userId);
-        List<JobOfferDTO> jobs = jobOfferService.getAllJobOffers();
+        List<JobOfferDTO> jobs;
+        if (user.getRole().equals(UserRole.RECRUITER)) {
+            jobs = jobOfferService.getAllPostedJobOffersByRecruiter(userId);
+        } else {
+            jobs = jobOfferService.getAllJobOffers();
+        }
+
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("jobs");
         modelAndView.addObject("jobs", jobs);
         modelAndView.addObject("isRecruiter", user.getRole().equals(UserRole.RECRUITER));
         modelAndView.addObject("isCandidate", user.getRole().equals(UserRole.CANDIDATE));
+
         return modelAndView;
     }
 

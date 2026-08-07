@@ -43,11 +43,13 @@
                     </a>
 
                     <a class="btn btn-warning btn-sm"
+                       th:if="${isCandidate}"
                        th:href="@{/applications/{id}/edit(id=${jobApplication.id})}">
                         Edit
                     </a>
 
-                    <form th:action="@{/applications/{id}/withdraw(id=${jobApplication.id})}"
+                    <form th:if="${isCandidate}"
+                            th:action="@{/applications/{id}/withdraw(id=${jobApplication.id})}"
                           method="post"
                           class="d-inline">
 

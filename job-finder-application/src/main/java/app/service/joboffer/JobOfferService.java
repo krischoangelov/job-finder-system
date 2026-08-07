@@ -62,6 +62,14 @@ public class JobOfferService {
                 .toList();
     }
 
+    public List<JobOfferDTO> getAllPostedJobOffersByRecruiter(UUID recruiterId) {
+
+        return jobOfferRepository.findAllByRecruiterId(recruiterId)
+                .stream()
+                .map(Mapper::toJobOfferDTO)
+                .toList();
+    }
+
     public JobOfferDTO getJobOfferById(UUID id) {
         JobOffer jobOffer = jobOfferRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("No such job offer was found"));

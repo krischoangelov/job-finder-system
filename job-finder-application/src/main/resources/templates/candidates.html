@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Candidates')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container py-4">
+
+    <div class="mb-4">
+
+        <h1>Available Candidates</h1>
+
+        <p class="lead">
+            Review candidate profiles, skills and job applications.
+        </p>
+
+    </div>
+
+    <div th:replace="~{fragments/messages :: messages}"></div>
+
+    <!-- NO CANDIDATES -->
+
+    <div class="alert alert-light border"
+         th:if="${#lists.isEmpty(candidates)}">
+
+        <strong>No candidates found.</strong>
+
+        <p class="mb-0">
+            There are currently no registered candidates to display.
+        </p>
+
+    </div>
+
+    <!-- CANDIDATES -->
+
+    <div class="row"
+         th:if="${!#lists.isEmpty(candidates)}">
+
+        <div class="col-lg-6 mb-4"
+             th:each="candidate : ${candidates}">
+
+            <div class="card-custom h-100">
+
+                <!-- CANDIDATE HEADER -->
+
+                <div class="mb-3">
+
+                    <h3 class="mb-1">
+
+                    <span th:text="${candidate.firstName}">
+                        John
+                    </span>
+
+                        <span th:text="${candidate.lastName}">
+                        Doe
+                    </span>
+
+                    </h3>
+
+                    <p class="text-muted mb-1">
+
+                        @<span th:text="${candidate.username}">
+                        johndoe
+                    </span>
+
+                    </p>
+
+                    <p class="mb-0">
+
+                        <strong>Email:</strong>
+
+                        <span th:text="${candidate.email}">
+                        john@example.com
+                    </span>
+
+                    </p>
+
+                </div>
+
+                <hr>
+
+                <!-- SKILLS -->
+
+                <div class="mb-4">
+
+                    <h5>Skills</h5>
+
+                    <p class="text-muted"
+                       th:if="${#lists.isEmpty(candidate.skills)}">
+                        No skills added yet.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2"
+                         th:if="${!#lists.isEmpty(candidate.skills)}">
+
+                    <span class="badge bg-primary"
+                          th:each="skill : ${candidate.skills}"
+                          th:text="${skill.name + ' - ' + skill.level}">
+                        Java - ADVANCED
+                    </span>
+
+                    </div>
+
+                </div>
+
+                <!-- APPLICATIONS -->
+
+                <div>
+
+                    <h5>Applications</h5>
+
+                    <p class="text-muted"
+                       th:if="${#lists.isEmpty(candidate.jobApplications)}">
+                        This candidate has not submitted any applications.
+                    </p>
+
+                    <div th:if="${!#lists.isEmpty(candidate.jobApplications)}">
+
+                        <div class="border rounded p-3 mb-3"
+                             th:each="jobApplication : ${candidate.jobApplications}">
+
+                            <div class="d-flex justify-content-between align-items-start">
+
+                                <div>
+
+                                    <h6 class="mb-1"
+                                        th:text="${jobApplication.jobOffer.title}">
+                                        Java Developer
+                                    </h6>
+
+                                    <p class="text-muted mb-1"
+                                       th:text="${jobApplication.jobOffer.company}">
+                                        Company
+                                    </p>
+
+                                </div>
+
+                                <span class="badge"
+                                      th:classappend="${
+                                      jobApplication.status.name() == 'ACCEPTED' ? ' bg-success' :
+                                      jobApplication.status.name() == 'REJECTED' ? ' bg-danger' :
+                                      jobApplication.status.name() == 'WITHDRAWN' ? ' bg-secondary' :
+                                      ' bg-warning text-dark'
+                                  }"
+                                      th:text="${jobApplication.status}">
+                                PENDING
+                            </span>
+
+                            </div>
+
+                            <div class="mt-3 d-flex gap-2 flex-wrap">
+
+                                <a class="btn btn-primary btn-sm"
+                                   th:href="@{/applications/{id}(id=${jobApplication.id})}">
+                                    View Application
+                                </a>
+
+                                <a class="btn btn-success btn-sm"
+                                   th:if="${jobApplication.status.name() == 'ACCEPTED'}"
+                                   th:href="@{/interviews/create/{applicationId}(applicationId=${jobApplication.id})}">
+                                    Schedule Interview
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body> </html>

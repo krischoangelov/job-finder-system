@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{fragments/head :: head('Home')}"></head>
 
@@ -15,24 +15,31 @@
         <h1>
             Welcome,
             <span th:text="${user.username}">
-                User
-            </span>
+            User
+        </span>
             !
         </h1>
 
-        <p class="lead">
+        <p class="lead"
+           th:if="${user.role.name() == 'CANDIDATE'}">
             Your gateway to career opportunities.
+        </p>
+
+        <p class="lead"
+           th:if="${user.role.name() == 'RECRUITER'}">
+            Find talented candidates and manage your recruitment process.
         </p>
 
     </section>
 
-    <section class="container">
+    <section class="container"
+             th:if="${user.role.name() == 'CANDIDATE'}">
 
         <div class="row">
 
-            <div class="col-md-4">
+            <div class="col-md-4 mb-4 d-flex">
 
-                <div class="card-custom">
+                <div class="card-custom w-100 h-100 d-flex flex-column">
 
                     <h3>Browse Jobs</h3>
 
@@ -49,14 +56,14 @@
 
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4 mb-4 d-flex">
 
-                <div class="card-custom">
+                <div class="card-custom w-100 h-100 d-flex flex-column">
 
                     <h3>My Applications</h3>
 
                     <p>
-                        Track your submitted applications.
+                        Track and manage your submitted applications.
                     </p>
 
                     <a class="btn btn-primary"
@@ -68,14 +75,14 @@
 
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4 mb-4 d-flex">
 
-                <div class="card-custom">
+                <div class="card-custom w-100 h-100 d-flex flex-column">
 
                     <h3>My Skills</h3>
 
                     <p>
-                        Manage your professional skills.
+                        Manage the professional skills shown on your profile.
                     </p>
 
                     <a class="btn btn-primary"
@@ -91,9 +98,80 @@
 
     </section>
 
+    <section class="container"
+             th:if="${user.role.name() == 'RECRUITER'}">
+
+        <div class="row">
+
+            <div class="col-md-4 mb-4 d-flex">
+
+                <div class="card-custom w-100 h-100 d-flex flex-column">
+
+                    <h3>Browse Jobs</h3>
+
+                    <p>
+                        View available job offers and manage the offers you have published.
+                    </p>
+
+                    <div class="mt-auto">
+                        <a class="btn btn-primary"
+                           th:href="@{/jobs}">
+                            View Jobs
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-4 d-flex">
+
+                <div class="card-custom w-100 h-100 d-flex flex-column">
+
+                    <h3>Browse Applications</h3>
+
+                    <p>
+                        Review applications submitted for your job offers.
+                    </p>
+
+                    <div class="mt-auto">
+                        <a class="btn btn-primary"
+                           th:href="@{/applications}">
+                            Applications
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-4 d-flex">
+
+                <div class="card-custom w-100 h-100 d-flex flex-column">
+
+                    <h3>Candidates</h3>
+
+                    <p>
+                        Review candidates, their skills and submitted applications.
+                    </p>
+
+                    <div class="mt-auto">
+                        <a class="btn btn-primary"
+                           th:href="@{/candidates}">
+                            View Candidates
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 
-</body>
-</html>
+</body> </html>

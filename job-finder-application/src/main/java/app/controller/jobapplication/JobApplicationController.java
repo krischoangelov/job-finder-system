@@ -32,9 +32,11 @@ public class JobApplicationController {
     public ModelAndView getApplicationsPage(HttpSession httpSession) {
         UUID userId = (UUID) httpSession.getAttribute("user_id");
         List<JobApplicationDTO> applications = jobApplicationService.getApplicationsForUser(userId);
+        UserDTO user = userService.getById(userId);
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("applications");
         modelAndView.addObject("applications", applications);
+        modelAndView.addObject("isCandidate", user.getRole().equals(UserRole.CANDIDATE));
         return modelAndView;
     }
 
