@@ -8,8 +8,8 @@ import lombok.Data;
 @Builder
 @Data
 public class UserLoginRequestDTO {
-    @NotNull(message = "Email cannot be empty")
-    private String email;
+    @NotNull(message = "Username cannot be empty")
+    private String username;
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 }

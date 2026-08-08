@@ -11,6 +11,9 @@ import app.model.enums.UserRole;
 import app.repository.user.UserRepository;
 import app.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -30,15 +33,15 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserDTO login(UserLoginRequestDTO userLoginRequest) {
-       User user = userRepository.findByEmail(userLoginRequest.getEmail()).orElse(null);
-
-       if (user == null || !passwordEncoder.matches(userLoginRequest.getPassword(), user.getPassword())) {
-           throw new RuntimeException("Email or password is invalid.");
-       }
-
-        return Mapper.toUserDTO(user);
-    }
+//    public UserDTO login(UserLoginRequestDTO userLoginRequest) {
+//       User user = userRepository.findByUsername(userLoginRequest.getUsername()).orElse(null);
+//
+//       if (user == null || !passwordEncoder.matches(userLoginRequest.getPassword(), user.getPassword())) {
+//           throw new RuntimeException("Email or password is invalid.");
+//       }
+//
+//        return Mapper.toUserDTO(user);
+//    }
 
     public UserDTO register(UserRegisterRequestDTO userRegisterRequest) {
 
@@ -127,4 +130,18 @@ public class UserService {
     }
 
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new UsernameNotFoundException(username)
+        );
+
+        return AuthenticationUserDetails
+                .builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .role(user.getRole())
+                .build();
+    }
 }

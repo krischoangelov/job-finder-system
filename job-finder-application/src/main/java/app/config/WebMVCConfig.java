@@ -1,6 +1,6 @@
 package app.config;
 
-import app.security.SessionInterceptor;
+//import app.security.SessionInterceptor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,11 +13,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMVCConfig implements WebMvcConfigurer {
 
-    private final SessionInterceptor sessionInterceptor;
-
-    public WebMVCConfig(SessionInterceptor sessionInterceptor) {
-        this.sessionInterceptor = sessionInterceptor;
-    }
+//    private final SessionInterceptor sessionInterceptor;
+//
+//    public WebMVCConfig(SessionInterceptor sessionInterceptor) {
+//        this.sessionInterceptor = sessionInterceptor;
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
