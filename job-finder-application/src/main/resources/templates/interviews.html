@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Interviews')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container py-4">
+
+
+
+    <div class="mb-4">
+
+        <h1>Scheduled Interviews</h1>
+
+        <p class="lead">
+            Manage your scheduled interviews.
+        </p>
+
+    </div>
+
+
+
+    <div th:replace="~{fragments/messages :: messages}"></div>
+
+
+
+    <div class="alert alert-light border"
+         th:if="${#lists.isEmpty(interviews)}">
+
+        <strong>No interviews scheduled.</strong>
+
+        <p class="mb-0">
+            You currently have no scheduled interviews.
+            Interviews can be scheduled for accepted job applications.
+        </p>
+
+    </div>
+
+
+
+    <div class="row"
+         th:if="${!#lists.isEmpty(interviews)}">
+
+        <div class="col-lg-6 mb-4 d-flex"
+             th:each="interview : ${interviews}">
+
+            <div class="card-custom w-100 h-100 d-flex flex-column">
+
+
+                <!-- HEADER -->
+
+                <div class="d-flex justify-content-between align-items-start mb-3">
+
+                    <div>
+
+                        <h3 class="mb-1">
+                            Interview
+                        </h3>
+
+                        <p class="text-muted mb-0"
+                           th:text="${#temporals.format(
+                               interview.scheduledAt,
+                               'dd MMMM yyyy'
+                           )}">
+                            15 August 2026
+                        </p>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <span class="badge"
+                          th:classappend="${
+                              interview.status.name() == 'CONFIRMED' ? ' bg-success' :
+                              interview.status.name() == 'DECLINED' ? ' bg-danger' :
+                              interview.status.name() == 'CANCELLED' ? ' bg-secondary' :
+                              interview.status.name() == 'COMPLETED' ? ' bg-dark' :
+                              ' bg-warning text-dark'
+                          }"
+                          th:text="${interview.status}">
+                        SCHEDULED
+                    </span>
+
+                </div>
+
+
+                <hr>
+
+
+
+                <p>
+
+                    <strong>Date:</strong>
+
+                    <span th:text="${#temporals.format(
+                        interview.scheduledAt,
+                        'dd-MM-yyyy'
+                    )}">
+                        15-08-2026
+                    </span>
+
+                </p>
+
+
+                <p>
+
+                    <strong>Time:</strong>
+
+                    <span th:text="${#temporals.format(
+                        interview.scheduledAt,
+                        'HH:mm'
+                    )}">
+                        14:30
+                    </span>
+
+                </p>
+
+
+                <p>
+
+                    <strong>Interview Type:</strong>
+
+                    <span th:text="${interview.type}">
+                        ONLINE
+                    </span>
+
+                </p>
+
+
+
+                <p th:if="${interview.location != null
+                           and !#strings.isEmpty(interview.location)}">
+
+                    <strong>Location:</strong>
+
+                    <span th:text="${interview.location}">
+                        Sofia Office
+                    </span>
+
+                </p>
+
+
+                <p th:if="${interview.meetingLink != null
+                           and !#strings.isEmpty(interview.meetingLink)}">
+
+                    <strong>Meeting:</strong>
+
+                    <a th:href="${interview.meetingLink}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        Open Meeting
+                    </a>
+
+                </p>
+
+
+
+                <p th:if="${interview.createdOn != null}">
+
+                    <strong>Created On:</strong>
+
+                    <span th:text="${#temporals.format(
+                        interview.createdOn,
+                        'dd-MM-yyyy HH:mm'
+                    )}">
+                        10-08-2026 10:00
+                    </span>
+
+                </p>
+
+
+
+                <p th:if="${interview.updatedOn != null}">
+
+                    <strong>Last Updated:</strong>
+
+                    <span th:text="${#temporals.format(
+                        interview.updatedOn,
+                        'dd-MM-yyyy HH:mm'
+                    )}">
+                        11-08-2026 12:30
+                    </span>
+
+                </p>
+
+
+
+                <div class="mt-auto pt-3 d-flex gap-2 flex-wrap">
+
+
+
+                    <a class="btn btn-primary"
+                       th:href="@{/interviews/{id}(id=${interview.id})}">
+                        Details
+                    </a>
+
+
+
+                    <a class="btn btn-warning"
+                       th:if="${interview.status.name() == 'SCHEDULED'
+                              or interview.status.name() == 'CONFIRMED'}"
+                       th:href="@{/interviews/{id}/edit(id=${interview.id})}">
+                        Reschedule
+                    </a>
+
+
+
+                    <form th:if="${interview.status.name() == 'SCHEDULED'
+                                 or interview.status.name() == 'CONFIRMED'}"
+                          th:action="@{/interviews/{id}/cancel(id=${interview.id})}"
+                          method="post"
+                          class="d-inline">
+
+                        <button type="submit"
+                                class="btn btn-danger">
+                            Cancel
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>
