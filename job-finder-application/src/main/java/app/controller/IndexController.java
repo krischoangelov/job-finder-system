@@ -3,14 +3,18 @@ package app.controller;
 import app.model.dto.user.UserDTO;
 import app.model.dto.user.UserLoginRequestDTO;
 import app.model.dto.user.UserRegisterRequestDTO;
+import app.service.user.AuthenticationUserDetails;
 import app.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.UUID;
@@ -30,36 +34,44 @@ public class IndexController {
     }
 
     @GetMapping("/login")
-    public ModelAndView getLoginPage() {
+    public ModelAndView getLoginPage(@RequestParam(required = false) String error) {
         ModelAndView modelAndView = new ModelAndView();
         UserLoginRequestDTO userLoginRequest = UserLoginRequestDTO.builder().build();
         modelAndView.setViewName("login");
         modelAndView.addObject("userLoginRequest", userLoginRequest);
-        return modelAndView;
-    }
 
-    @PostMapping("/login")
-    public ModelAndView login(@Valid UserLoginRequestDTO userLoginRequest, BindingResult bindingResult,
-                              HttpSession httpSession) {
-
-        if (bindingResult.hasErrors()) {
-            return new ModelAndView("login");
+        if (error != null) {
+            modelAndView.addObject("loginError", "Username or password incorrect!");
         }
 
-        UserDTO user = userService.login(userLoginRequest);
-        httpSession.setAttribute("user_id", user.getId());
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("userLoginRequest", userLoginRequest);
-        modelAndView.setViewName("redirect:/home");
-
         return modelAndView;
     }
 
+//    @PostMapping("/login")
+//    public ModelAndView login(@Valid UserLoginRequestDTO userLoginRequest, BindingResult bindingResult,
+//                              HttpSession httpSession) {
+//
+//        if (bindingResult.hasErrors()) {
+//            return new ModelAndView("login");
+//        }
+//
+//        UserDTO user = userService.login(userLoginRequest);
+//        httpSession.setAttribute("user_id", user.getId());
+//
+//        ModelAndView modelAndView = new ModelAndView();
+//        modelAndView.addObject("userLoginRequest", userLoginRequest);
+//        modelAndView.setViewName("redirect:/home");
+//
+//        return modelAndView;
+//    }
+
     @GetMapping("/home")
-    public ModelAndView getHomePage(HttpSession httpSession) {
-        UUID uuid = (UUID) httpSession.getAttribute("user_id");
-        UserDTO user = userService.getById(uuid);
+    public ModelAndView getHomePage() {
+        AuthenticationUserDetails principal = (AuthenticationUserDetails) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        UserDTO user = userService.getById(principal.getId());
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("home");
         modelAndView.addObject("user", user);
