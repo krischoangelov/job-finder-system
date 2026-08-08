@@ -3,8 +3,11 @@ package app.controller.skill;
 import app.model.dto.skill.SkillDTO;
 import app.model.dto.skill.CreateSkillRequest;
 import app.service.skill.SkillService;
+import app.service.user.AuthenticationUserDetails;
 import app.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,9 +28,8 @@ public class SkillController {
     }
 
     @GetMapping
-    public ModelAndView getSkillsPage(HttpSession httpSession) {
-        UUID skillId = (UUID) httpSession.getAttribute("user_id");
-        List<SkillDTO> skills = skillService.getSkillByUser(skillId);
+    public ModelAndView getSkillsPage(@AuthenticationPrincipal AuthenticationUserDetails principal) {
+        List<SkillDTO> skills = skillService.getSkillByUser(principal.getId());
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("skills");
@@ -47,12 +49,10 @@ public class SkillController {
     @PostMapping("/create")
     public ModelAndView createSkill(
             @ModelAttribute CreateSkillRequest createSkillRequest,
-            HttpSession session) {
-
-        UUID userId = (UUID) session.getAttribute("user_id");
+            @AuthenticationPrincipal AuthenticationUserDetails principal) {
 
         skillService.createNewSkill(
-                userId,
+                principal.getId(),
                 createSkillRequest.getName(),
                 createSkillRequest.getLevel()
         );
@@ -61,10 +61,9 @@ public class SkillController {
     }
 
     @GetMapping("/{id}/edit")
-    public ModelAndView getEditSkillPage(@PathVariable UUID id, HttpSession httpSession) {
-        UUID userid = (UUID) httpSession.getAttribute("user_id");
+    public ModelAndView getEditSkillPage(@PathVariable UUID id, @AuthenticationPrincipal AuthenticationUserDetails principal) {
 
-        SkillDTO skill = skillService.getSkillBySkillIdAndUserId(id, userid);
+        SkillDTO skill = skillService.getSkillBySkillIdAndUserId(id, principal.getId());
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("edit-skill");
@@ -74,17 +73,15 @@ public class SkillController {
     }
 
     @PostMapping("/{id}/edit")
-    public ModelAndView editSkill(@PathVariable UUID id, @ModelAttribute SkillDTO skillDTO, HttpSession httpSession) {
-        UUID userId = (UUID) httpSession.getAttribute("user_id");
-        skillService.updateSkill(id, userId, skillDTO);
+    public ModelAndView editSkill(@PathVariable UUID id, @ModelAttribute SkillDTO skillDTO,
+                                  @AuthenticationPrincipal AuthenticationUserDetails principal) {
+        skillService.updateSkill(id, principal.getId(), skillDTO);
         return new ModelAndView("redirect:/skills");
     }
 
     @PostMapping("/{id}/delete")
-    public ModelAndView deleteSkill(@PathVariable UUID id, HttpSession httpSession) {
-        UUID userId = (UUID) httpSession.getAttribute("user_id");
-
-        skillService.deleteSkill(id, userId);
+    public ModelAndView deleteSkill(@PathVariable UUID id, @AuthenticationPrincipal AuthenticationUserDetails principal) {
+        skillService.deleteSkill(id, principal.getId());
 
         return new ModelAndView("redirect:/skills");
     }

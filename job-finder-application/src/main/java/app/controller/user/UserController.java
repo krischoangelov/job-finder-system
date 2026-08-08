@@ -3,8 +3,10 @@ package app.controller.user;
 import app.model.dto.user.UserDTO;
 import app.model.dto.user.UserUpdateProfileRequest;
 import app.model.enums.UserRole;
+import app.service.user.AuthenticationUserDetails;
 import app.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,11 +26,9 @@ public class UserController {
 
 
     @GetMapping("/profile")
-    public ModelAndView getProfilePage(HttpSession httpSession) {
+    public ModelAndView getProfilePage(@AuthenticationPrincipal AuthenticationUserDetails principal) {
 
-        UUID uuid = (UUID) httpSession.getAttribute("user_id");
-
-        UserDTO user = userService.getById(uuid);
+        UserDTO user = userService.getById(principal.getId());
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("profile");
@@ -39,11 +39,10 @@ public class UserController {
 
 
     @PostMapping("/profile")
-    public ModelAndView updateProfileSettings(HttpSession httpSession, @ModelAttribute UserUpdateProfileRequest userUpdateProfileRequest) {
+    public ModelAndView updateProfileSettings(@AuthenticationPrincipal AuthenticationUserDetails principal,
+                                              @ModelAttribute UserUpdateProfileRequest userUpdateProfileRequest) {
 
-        UUID id = (UUID) httpSession.getAttribute("user_id");
-
-        UserDTO user = userService.updateProfile(id, userUpdateProfileRequest);
+        UserDTO user = userService.updateProfile(principal.getId(), userUpdateProfileRequest);
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/profile");
@@ -52,11 +51,9 @@ public class UserController {
     }
 
     @GetMapping("/dashboard")
-    public ModelAndView getDashboardPage(HttpSession httpSession) {
+    public ModelAndView getDashboardPage(@AuthenticationPrincipal AuthenticationUserDetails principal) {
 
-        UUID id = (UUID) httpSession.getAttribute("user_id");
-
-        UserDTO user = userService.getById(id);
+        UserDTO user = userService.getById(principal.getId());
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("dashboard");
@@ -66,17 +63,15 @@ public class UserController {
     }
 
     @GetMapping("/candidates")
-    public ModelAndView getCandidatesPage(HttpSession httpSession) {
+    public ModelAndView getCandidatesPage(@AuthenticationPrincipal AuthenticationUserDetails principal) {
 
-        UUID userId = (UUID) httpSession.getAttribute("user_id");
-
-        UserDTO currentUser = userService.getById(userId);
+        UserDTO currentUser = userService.getById(principal.getId());
 
         if (!currentUser.getRole().equals(UserRole.RECRUITER)) {
             throw new RuntimeException("Only recruiters can view candidates");
         }
 
-        List<UserDTO> candidates = userService.getAllCandidatesByRecruiter(userId);
+        List<UserDTO> candidates = userService.getAllCandidatesByRecruiter(principal.getId());
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("candidates");

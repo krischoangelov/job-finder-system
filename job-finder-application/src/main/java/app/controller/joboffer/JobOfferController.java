@@ -5,8 +5,10 @@ import app.model.dto.joboffer.JobOfferDTO;
 import app.model.dto.user.UserDTO;
 import app.model.enums.UserRole;
 import app.service.joboffer.JobOfferService;
+import app.service.user.AuthenticationUserDetails;
 import app.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,12 +30,11 @@ public class JobOfferController {
     }
 
     @GetMapping
-    public ModelAndView getJobOffersPage(HttpSession httpSession) {
-        UUID userId = (UUID) httpSession.getAttribute("user_id");
-        UserDTO user = userService.getById(userId);
+    public ModelAndView getJobOffersPage(@AuthenticationPrincipal AuthenticationUserDetails principal) {
+        UserDTO user = userService.getById(principal.getId());
         List<JobOfferDTO> jobs;
         if (user.getRole().equals(UserRole.RECRUITER)) {
-            jobs = jobOfferService.getAllPostedJobOffersByRecruiter(userId);
+            jobs = jobOfferService.getAllPostedJobOffersByRecruiter(principal.getId());
         } else {
             jobs = jobOfferService.getAllJobOffers();
         }
@@ -48,10 +49,9 @@ public class JobOfferController {
     }
 
     @GetMapping("/{id}")
-    public ModelAndView getJobDetailsPage(@PathVariable UUID id, HttpSession httpSession) {
-        UUID userId = (UUID) httpSession.getAttribute("user_id");
+    public ModelAndView getJobDetailsPage(@PathVariable UUID id, @AuthenticationPrincipal AuthenticationUserDetails principal) {
 
-        UserDTO user = userService.getById(userId);
+        UserDTO user = userService.getById(principal.getId());
         JobOfferDTO job = jobOfferService.getJobOfferById(id);
 
         ModelAndView modelAndView = new ModelAndView();
@@ -74,11 +74,10 @@ public class JobOfferController {
     @PostMapping("/create")
     public ModelAndView createJobOffer(
             @ModelAttribute("jobOfferRequest") CreateJobOfferRequest createJobOfferRequest,
-            HttpSession session) {
+            @AuthenticationPrincipal AuthenticationUserDetails principal) {
 
-        UUID recruiterId = (UUID) session.getAttribute("user_id");
 
-        jobOfferService.createJobOffer(recruiterId, createJobOfferRequest);
+        jobOfferService.createJobOffer(principal.getId(), createJobOfferRequest);
 
         return new ModelAndView("redirect:/jobs");
     }
@@ -95,17 +94,16 @@ public class JobOfferController {
     }
 
     @PostMapping("/{id}/edit")
-    public ModelAndView editJobOffer(@PathVariable UUID id, @ModelAttribute JobOfferDTO jobOfferDTO, HttpSession httpSession) {
-        UUID recruiterId = (UUID) httpSession.getAttribute("user_id");
-        jobOfferService.updateJobOffer(id, recruiterId, jobOfferDTO);
+    public ModelAndView editJobOffer(@PathVariable UUID id, @ModelAttribute JobOfferDTO jobOfferDTO,
+                                     @AuthenticationPrincipal AuthenticationUserDetails principal) {
+        jobOfferService.updateJobOffer(id, principal.getId(), jobOfferDTO);
         return new ModelAndView("redirect:/jobs");
     }
 
     @PostMapping("/{id}/delete")
-    public ModelAndView deleteJobOffer(@PathVariable UUID id, HttpSession httpSession) {
-        UUID userId = (UUID) httpSession.getAttribute("user_id");
+    public ModelAndView deleteJobOffer(@PathVariable UUID id, @AuthenticationPrincipal AuthenticationUserDetails principal) {
 
-        jobOfferService.deleteJobOffer(id, userId);
+        jobOfferService.deleteJobOffer(id, principal.getId());
 
         return new ModelAndView("redirect:/jobs");
     }
