@@ -63,6 +63,12 @@
 
             </form>
 
+            <a th:if="${isRecruiter and jobApplication.status.name() == 'ACCEPTED'}"
+               class="btn btn-primary"
+               th:href="@{/interviews/create/{applicationId}(applicationId=${jobApplication.id})}">
+                Schedule Interview
+            </a>
+
         </div>
 
     </div>

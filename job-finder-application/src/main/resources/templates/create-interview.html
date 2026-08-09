@@ -18,7 +18,7 @@
 
         <div th:replace="~{fragments/messages :: messages}"></div>
 
-        <form th:action="@{/interviews/create}"
+        <form th:action="@{/interviews/create/{applicationId}(applicationId=${applicationId})}"
               th:object="${interviewRequest}"
               method="post">
 

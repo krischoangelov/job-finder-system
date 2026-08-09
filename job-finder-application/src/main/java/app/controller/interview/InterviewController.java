@@ -3,7 +3,9 @@ package app.controller.interview;
 import app.model.dto.interview.CreateInterviewRequest;
 import app.model.dto.interview.InterviewResponse;
 import app.model.dto.interview.UpdateInterviewRequest;
+import app.model.dto.jobapplication.JobApplicationDTO;
 import app.service.interview.InterviewService;
+import app.service.jobapplication.JobApplicationService;
 import app.service.user.AuthenticationUserDetails;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,10 +21,15 @@ import java.util.UUID;
 @RequestMapping("/interviews")
 public class InterviewController {
 
-   private final InterviewService interviewService;
+    private final InterviewService interviewService;
+    private final JobApplicationService jobApplicationService;
 
-    public InterviewController(InterviewService interviewService) {
+    public InterviewController(
+            InterviewService interviewService,
+            JobApplicationService jobApplicationService) {
+
         this.interviewService = interviewService;
+        this.jobApplicationService = jobApplicationService;
     }
 
     @GetMapping
@@ -52,42 +59,44 @@ public class InterviewController {
     }
 
 
-    // =========================
-    // CREATE PAGE
-    // =========================
-
-    @GetMapping("/create")
-    public ModelAndView getCreateInterviewPage() {
+    @GetMapping("/create/{applicationId}")
+    public ModelAndView getCreateInterviewPage(@PathVariable UUID applicationId) {
 
         ModelAndView modelAndView =
                 new ModelAndView("create-interview");
 
-        modelAndView.addObject(
-                "interviewRequest",
-                new CreateInterviewRequest()
-        );
+        modelAndView.addObject("applicationId", applicationId);
+
+        modelAndView.addObject("interviewRequest", new CreateInterviewRequest());
 
         return modelAndView;
     }
 
 
-    // =========================
-    // CREATE ACTION
-    // =========================
-
-    @PostMapping("/create")
+    @PostMapping("/create/{applicationId}")
     public ModelAndView createInterview(
+            @PathVariable UUID applicationId,
             @Valid
             @ModelAttribute("interviewRequest")
             CreateInterviewRequest request,
-            BindingResult bindingResult) {
+            BindingResult bindingResult,
+            @AuthenticationPrincipal AuthenticationUserDetails principal) {
 
         if (bindingResult.hasErrors()) {
 
-            return new ModelAndView(
-                    "create-interview"
-            );
+            ModelAndView modelAndView = new ModelAndView("create-interview");
+
+            modelAndView.addObject("applicationId", applicationId);
+
+            return modelAndView;
         }
+
+        request.setJobApplicationId(applicationId);
+        request.setRecruiterId(principal.getId());
+
+        JobApplicationDTO application = jobApplicationService.getApplicationById(applicationId, principal.getId());
+
+        request.setCandidateId(application.getCandidate().getId());
 
         interviewService.createInterview(request);
 
@@ -97,56 +106,31 @@ public class InterviewController {
     }
 
 
-    // =========================
-    // EDIT PAGE
-    // =========================
-
     @GetMapping("/{id}/edit")
     public ModelAndView getEditInterviewPage(
             @PathVariable UUID id) {
 
-        InterviewResponse interview =
-                interviewService.getInterviewById(id);
+        InterviewResponse interview = interviewService.getInterviewById(id);
 
-        UpdateInterviewRequest request =
-                new UpdateInterviewRequest();
+        UpdateInterviewRequest request = new UpdateInterviewRequest();
 
-        request.setScheduledAt(
-                interview.getScheduledAt()
-        );
+        request.setScheduledAt(interview.getScheduledAt());
 
-        request.setMeetingLink(
-                interview.getMeetingLink()
-        );
+        request.setMeetingLink(interview.getMeetingLink());
 
-        request.setLocation(
-                interview.getLocation()
-        );
+        request.setLocation(interview.getLocation());
 
-        request.setType(
-                interview.getType()
-        );
+        request.setType(interview.getType());
 
-        ModelAndView modelAndView =
-                new ModelAndView("edit-interview");
+        ModelAndView modelAndView = new ModelAndView("edit-interview");
 
-        modelAndView.addObject(
-                "interviewId",
-                id
-        );
+        modelAndView.addObject("interviewId", id);
 
-        modelAndView.addObject(
-                "interviewRequest",
-                request
-        );
+        modelAndView.addObject("interviewRequest", request);
 
         return modelAndView;
     }
 
-
-    // =========================
-    // EDIT ACTION
-    // =========================
 
     @PostMapping("/{id}/edit")
     public ModelAndView updateInterview(
@@ -158,33 +142,18 @@ public class InterviewController {
 
         if (bindingResult.hasErrors()) {
 
-            ModelAndView modelAndView =
-                    new ModelAndView(
-                            "edit-interview"
-                    );
+            ModelAndView modelAndView = new ModelAndView("edit-interview");
 
-            modelAndView.addObject(
-                    "interviewId",
-                    id
-            );
+            modelAndView.addObject("interviewId", id);
 
             return modelAndView;
         }
 
-        interviewService.updateInterview(
-                id,
-                request
-        );
+        interviewService.updateInterview(id, request);
 
-        return new ModelAndView(
-                "redirect:/interviews/" + id
-        );
+        return new ModelAndView("redirect:/interviews/" + id);
     }
 
-
-    // =========================
-    // CONFIRM
-    // =========================
 
     @PostMapping("/{id}/confirm")
     public ModelAndView confirmInterview(
@@ -192,15 +161,9 @@ public class InterviewController {
 
         interviewService.confirmInterview(id);
 
-        return new ModelAndView(
-                "redirect:/interviews/" + id
-        );
+        return new ModelAndView("redirect:/interviews/" + id);
     }
 
-
-    // =========================
-    // DECLINE
-    // =========================
 
     @PostMapping("/{id}/decline")
     public ModelAndView declineInterview(
@@ -208,15 +171,9 @@ public class InterviewController {
 
         interviewService.declineInterview(id);
 
-        return new ModelAndView(
-                "redirect:/interviews/" + id
-        );
+        return new ModelAndView("redirect:/interviews/" + id);
     }
 
-
-    // =========================
-    // CANCEL
-    // =========================
 
     @PostMapping("/{id}/cancel")
     public ModelAndView cancelInterview(
@@ -224,8 +181,6 @@ public class InterviewController {
 
         interviewService.cancelInterview(id);
 
-        return new ModelAndView(
-                "redirect:/interviews"
-        );
+        return new ModelAndView("redirect:/interviews");
     }
 }
