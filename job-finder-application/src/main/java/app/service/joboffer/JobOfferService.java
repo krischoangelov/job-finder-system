@@ -8,6 +8,7 @@ import app.model.enums.UserRole;
 import app.repository.joboffer.JobOfferRepository;
 import app.repository.user.UserRepository;
 import app.utils.Mapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class JobOfferService {
 
@@ -28,11 +30,14 @@ public class JobOfferService {
     }
 
     public JobOfferDTO createJobOffer(UUID recruiterId, CreateJobOfferRequest createJobOfferRequest) {
-        User recruiter = userRepository.findById(recruiterId).orElseThrow(
-                () -> new RuntimeException("No such recruiter was found")
-        );
+        User recruiter = userRepository.findById(recruiterId)
+                .orElseThrow(() -> {
+                    log.warn("Cannot create job offer because recruiterId={} was not found", recruiterId);
+                    return new RuntimeException("No such recruiter was found");
+                });
 
         if (recruiter.getRole().equals(UserRole.CANDIDATE)) {
+            log.warn("UserId={} attempted to create a job offer without RECRUITER role", recruiterId);
             throw new RuntimeException("Candidates cannot create job offers");
         }
 
@@ -52,36 +57,55 @@ public class JobOfferService {
 
         jobOfferRepository.save(jobOffer);
 
+        log.info("Job offer created successfully with id={} by recruiterId={}", jobOffer.getId(), recruiterId);
+
         return Mapper.toJobOfferDTO(jobOffer);
     }
 
     public List<JobOfferDTO> getAllJobOffers() {
-        return jobOfferRepository.findAll()
+        List<JobOfferDTO> jobOffers = jobOfferRepository.findAll()
                 .stream()
                 .map(Mapper::toJobOfferDTO)
                 .toList();
+
+        log.info("Retrieved {} job offers", jobOffers.size());
+
+        return jobOffers;
     }
 
     public List<JobOfferDTO> getAllPostedJobOffersByRecruiter(UUID recruiterId) {
 
-        return jobOfferRepository.findAllByRecruiterId(recruiterId)
+        List<JobOfferDTO> jobOffers = jobOfferRepository.findAllByRecruiterId(recruiterId)
                 .stream()
                 .map(Mapper::toJobOfferDTO)
                 .toList();
+
+        log.info("Retrieved {} job offers posted by recruiterId={}", jobOffers.size(), recruiterId);
+
+        return jobOffers;
     }
 
     public JobOfferDTO getJobOfferById(UUID id) {
         JobOffer jobOffer = jobOfferRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No such job offer was found"));
+                .orElseThrow(() -> {
+                    log.warn("Job offer id={} was not found", id);
+                    return new RuntimeException("No such job offer was found");
+                });
+
+        log.info("Job offer id={} retrieved successfully", id);
 
         return Mapper.toJobOfferDTO(jobOffer);
     }
 
     public JobOfferDTO updateJobOffer(UUID id, UUID recruiterId, JobOfferDTO jobOfferDTO) {
-        JobOffer jobOffer = jobOfferRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("No such job offer was found"));
+        JobOffer jobOffer = jobOfferRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Cannot update job offer because id={} was not found", id);
+                    return new RuntimeException("No such job offer was found");
+                });
 
         if (!jobOffer.getRecruiter().getId().equals(recruiterId)) {
+            log.warn("Unauthorized update attempt by recruiterId={} for jobOfferId={}", recruiterId, id);
             throw new RuntimeException("You are not allowed to edit this job offer");
         }
 
@@ -95,19 +119,27 @@ public class JobOfferService {
 
         jobOfferRepository.save(jobOffer);
 
+        log.info("Job offer id={} successfully updated by recruiterId={}", id, recruiterId);
+
         return Mapper.toJobOfferDTO(jobOffer);
     }
 
 
     public void deleteJobOffer(UUID jobOfferId, UUID recruiterId) {
         JobOffer jobOffer = jobOfferRepository.findById(jobOfferId)
-                .orElseThrow(() -> new RuntimeException("Job offer not found"));
+                .orElseThrow(() -> {
+                    log.warn("Cannot delete job offer because id={} was not found", jobOfferId);
+                    return new RuntimeException("Job offer not found");
+                });
 
         if (!jobOffer.getRecruiter().getId().equals(recruiterId)) {
+            log.warn("Unauthorized delete attempt by recruiterId={} for jobOfferId={}", recruiterId, jobOfferId);
             throw new RuntimeException("You are not allowed to delete this job offer");
         }
 
         jobOfferRepository.delete(jobOffer);
+
+        log.info("Job offer id={} successfully deleted by recruiterId={}", jobOfferId, recruiterId);
 
     }
 }

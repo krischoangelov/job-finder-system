@@ -10,6 +10,7 @@ import app.model.entity.user.User;
 import app.model.enums.UserRole;
 import app.repository.user.UserRepository;
 import app.utils.Mapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class UserService implements UserDetailsService {
 
@@ -47,10 +49,12 @@ public class UserService implements UserDetailsService {
 
         Optional<User> user = userRepository.findByUsername(userRegisterRequest.getUsername());
         if (user.isPresent()) {
+            log.warn("Registration failed because username={} already exists", userRegisterRequest.getUsername());
             throw new RuntimeException("User with this username already exists");
         }
 
         if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())) {
+            log.warn("Registration failed because passwords do not match for username={}", userRegisterRequest.getUsername());
             throw new RuntimeException("Passwords do not match");
         }
 
@@ -61,53 +65,63 @@ public class UserService implements UserDetailsService {
 
         userRepository.save(entityUser);
 
+        log.info("User registered successfully with id={} and username={}", entityUser.getId(), entityUser.getUsername());
+
         return Mapper.toUserDTO(entityUser);
     }
 
     public UserDTO getById(UUID uuid) {
-        User user = userRepository.findById(uuid).orElse(null);
+        User user = userRepository.findById(uuid)
+                .orElseThrow(() -> {
+                    log.warn("User with id={} was not found", uuid);
+                    return new RuntimeException("No such user was found");
+                });
 
-        if (user == null)  {
-            throw new RuntimeException("No such user was found");
-        }
+        log.info("User with id={} retrieved successfully", uuid);
 
         return Mapper.toUserDTO(user);
     }
 
 
     public UserDTO updateProfile(UUID id, UserUpdateProfileRequest userUpdateProfileRequest) {
-        User user = userRepository.findById(id).orElse(null);
-
-        if (user == null) {
-            throw new RuntimeException("User with the searched ID does not exist");
-        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Cannot update profile because userId={} was not found", id);
+                    return new RuntimeException("User with the searched ID does not exist");
+                });
 
         user.setUsername(userUpdateProfileRequest.getUsername());
         user.setEmail(userUpdateProfileRequest.getEmail());
         user.setFirstName(userUpdateProfileRequest.getFirstName());
         user.setLastName(userUpdateProfileRequest.getLastName());
 
+        log.info("Profile successfully updated for userId={}", id);
+
         return Mapper.toUserDTO(userRepository.save(user));
     }
 
     public List<UserDTO> getAllCandidatesByRecruiter(UUID recruiterId) {
         User recruiter = userRepository.findById(recruiterId)
-                .orElseThrow(
-                        () -> new RuntimeException("Recruiter with the searched ID does not exist")
-                );
+                .orElseThrow(() -> {
+                    log.warn("Cannot retrieve candidates because recruiterId={} was not found", recruiterId);
+                    return new RuntimeException("Recruiter with the searched ID does not exist");
+                });
 
         if (!recruiter.getRole().equals(UserRole.RECRUITER)) {
+            log.warn("UserId={} attempted to view candidates without RECRUITER role", recruiterId);
             throw new RuntimeException("Only recruiters can view candidates");
         }
 
-
-
-        return recruiter.getCreatedJobs()
+        List<UserDTO> candidates = recruiter.getCreatedJobs()
                 .stream()
                 .flatMap(jobOffer -> jobOffer.getJobApplications().stream())
                 .map(JobApplication::getCandidate)
                 .map(candidate -> mapCandidateForRecruiter(candidate, recruiterId))
                 .toList();
+
+        log.info("Retrieved {} candidates for recruiterId={}", candidates.size(), recruiterId);
+
+        return candidates;
     }
 
     private UserDTO mapCandidateForRecruiter(User candidate, UUID recruiterId) {
@@ -132,9 +146,13 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new UsernameNotFoundException(username)
-        );
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    log.warn("Authentication failed because username={} was not found", username);
+                    return new UsernameNotFoundException(username);
+                });
+
+        log.info("User with username={} loaded successfully for authentication", username);
 
         return AuthenticationUserDetails
                 .builder()
