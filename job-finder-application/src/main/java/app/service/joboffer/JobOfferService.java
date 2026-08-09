@@ -110,7 +110,7 @@ public class JobOfferService {
 
         if (!jobOffer.getRecruiter().getId().equals(recruiterId)) {
             log.warn("Unauthorized update attempt by recruiterId={} for jobOfferId={}", recruiterId, id);
-            throw new JobOfferAccessDeniedException(id.toString());
+            throw new JobOfferAccessDeniedException(recruiterId.toString());
         }
 
         jobOffer.setTitle(jobOfferDTO.getTitle());
@@ -138,7 +138,7 @@ public class JobOfferService {
 
         if (!jobOffer.getRecruiter().getId().equals(recruiterId)) {
             log.warn("Unauthorized delete attempt by recruiterId={} for jobOfferId={}", recruiterId, jobOfferId);
-            throw new JobOfferAccessDeniedException(jobOfferId.toString());
+            throw new JobOfferAccessDeniedException(recruiterId.toString());
         }
 
         jobOfferRepository.delete(jobOffer);

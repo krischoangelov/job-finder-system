@@ -1,5 +1,8 @@
 package app.service.jobapplication;
 
+import app.exception.jobapplication.*;
+import app.exception.joboffer.JobOfferNotFound;
+import app.exception.user.UserNotFoundException;
 import app.model.dto.jobapplication.CreateJobApplicationRequest;
 import app.model.dto.jobapplication.JobApplicationDTO;
 import app.model.entity.jobapplication.JobApplication;
@@ -39,7 +42,7 @@ public class JobApplicationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.warn("Cannot fetch applications because userId={} was not found", userId);
-                    return new RuntimeException("User not found");
+                    return new UserNotFoundException(userId);
                 });
 
         if (user.getRole().equals(UserRole.CANDIDATE)) {
@@ -72,13 +75,13 @@ public class JobApplicationService {
 
                             log.warn("Job application id={} was not found", applicationId);
 
-                            return new RuntimeException("Application not found");
+                            return new JobApplicationNotFound(applicationId);
                         });
 
         if (!application.getCandidate().getId().equals(userId) && !application.getJobOffer().getRecruiter().getId().equals(userId)) {
 
             log.warn("Unauthorized attempt by userId={} to view applicationId={}", userId, applicationId);
-            throw new RuntimeException("You are not allowed to view this application");
+            throw new JobApplicationAccessDeniedException(userId.toString());
         }
 
         log.info("Job application id={} successfully retrieved by userId={}", applicationId, userId);
@@ -92,26 +95,26 @@ public class JobApplicationService {
         User candidate = userRepository.findById(candidateId)
                 .orElseThrow(() -> {
                     log.warn("Cannot create application because candidateId={} was not found", candidateId);
-                    return new RuntimeException("Candidate not found");
+                    return new UserNotFoundException(candidateId);
                 });
 
         if (!candidate.getRole().equals(UserRole.CANDIDATE)) {
 
             log.warn("UserId={} attempted to apply for jobOfferId={} without CANDIDATE role", candidateId, jobOfferId);
-            throw new RuntimeException("Only candidates can apply for jobs");
+            throw new CandidateAccessRequiredException(candidateId.toString());
         }
 
         JobOffer jobOffer = jobOfferRepository.findById(jobOfferId)
                 .orElseThrow(() -> {
                     log.warn("Cannot create application because jobOfferId={} was not found", jobOfferId);
-                    return new RuntimeException("Job offer not found");
+                    return new JobOfferNotFound(jobOfferId);
                 });
 
         if (jobApplicationRepository.existsByCandidateIdAndJobOfferId(candidateId, jobOfferId)) {
 
             log.warn("CandidateId={} attempted to apply twice for jobOfferId={}", candidateId, jobOfferId);
 
-            throw new RuntimeException("You have already applied for this job");
+            throw new AlreadyAppliedException(candidateId.toString());
         }
 
         JobApplication application = JobApplication.builder()
@@ -137,14 +140,14 @@ public class JobApplicationService {
         JobApplication application = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> {
                     log.warn("Cannot update application because applicationId={} was not found", applicationId);
-                    return new RuntimeException("Application not found");
+                    return new JobApplicationNotFound(applicationId);
                 });
 
         if (!application.getCandidate().getId().equals(candidateId)) {
 
             log.warn("Unauthorized update attempt by candidateId={} for applicationId={}", candidateId, applicationId);
 
-            throw new RuntimeException("You are not allowed to edit this application");
+            throw new JobApplicationAccessDeniedException(candidateId.toString());
         }
 
         if (!application.getStatus().equals(ApplicationStatus.PENDING)) {
@@ -152,7 +155,7 @@ public class JobApplicationService {
             log.warn("CandidateId={} attempted to edit applicationId={} with status={}",
                     candidateId, applicationId, application.getStatus());
 
-            throw new RuntimeException("Only pending applications can be edited");
+            throw new ApplicationNotEditableException(applicationId);
         }
 
         application.setMotivationLetter(request.getMotivationLetter());
@@ -169,14 +172,14 @@ public class JobApplicationService {
         JobApplication application = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> {
                     log.warn("Cannot withdraw application because applicationId={} was not found", applicationId);
-                    return new RuntimeException("Application not found");
+                    return new JobApplicationNotFound(applicationId);
                 });
 
         if (!application.getCandidate().getId().equals(candidateId)) {
 
             log.warn("Unauthorized withdrawal attempt by candidateId={} for applicationId={}", candidateId, applicationId);
 
-            throw new RuntimeException("You are not allowed to withdraw this application");
+            throw new JobApplicationAccessDeniedException(candidateId.toString());
         }
 
         application.setStatus(ApplicationStatus.WITHDRAWN);
@@ -189,14 +192,14 @@ public class JobApplicationService {
         JobApplication application = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> {
                     log.warn("Cannot accept application because applicationId={} was not found", applicationId);
-                    return new RuntimeException("Application not found");
+                    return new JobApplicationNotFound(applicationId);
                 });
 
         if (!application.getJobOffer().getRecruiter().getId().equals(recruiterId)) {
 
             log.warn("Unauthorized accept attempt by recruiterId={} for applicationId={}", recruiterId, applicationId);
 
-            throw new RuntimeException("You are not allowed to accept this application");
+            throw new JobApplicationAccessDeniedException(recruiterId.toString());
         }
 
         application.setStatus(ApplicationStatus.ACCEPTED);
@@ -210,14 +213,14 @@ public class JobApplicationService {
         JobApplication application = jobApplicationRepository.findById(applicationId)
                         .orElseThrow(() -> {
                             log.warn("Cannot reject application because applicationId={} was not found", applicationId);
-                            return new RuntimeException("Application not found");
+                            return new JobApplicationNotFound(applicationId);
                         });
 
         if (!application.getJobOffer().getRecruiter().getId().equals(recruiterId)) {
 
             log.warn("Unauthorized reject attempt by recruiterId={} for applicationId={}", recruiterId, applicationId);
 
-            throw new RuntimeException("You are not allowed to reject this application");
+            throw new JobApplicationAccessDeniedException(recruiterId.toString());
         }
 
         application.setStatus(ApplicationStatus.REJECTED);
