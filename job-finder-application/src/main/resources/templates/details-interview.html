@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Interview Details')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="container py-4">
+
+    <div class="job-details-card">
+
+        <div class="d-flex justify-content-between align-items-start">
+
+            <div>
+
+                <h2>
+                    Interview Details
+                </h2>
+
+                <p class="text-muted mb-0"
+                   th:text="${#temporals.format(
+                       interview.scheduledAt,
+                       'dd MMMM yyyy HH:mm'
+                   )}">
+                    15 August 2026 14:30
+                </p>
+
+            </div>
+
+
+            <span class="badge"
+                  th:classappend="${
+                      interview.status.name() == 'CONFIRMED' ? ' bg-success' :
+                      interview.status.name() == 'DECLINED' ? ' bg-danger' :
+                      interview.status.name() == 'CANCELLED' ? ' bg-secondary' :
+                      interview.status.name() == 'COMPLETED' ? ' bg-dark' :
+                      ' bg-warning text-dark'
+                  }"
+                  th:text="${interview.status}">
+                SCHEDULED
+            </span>
+
+        </div>
+
+        <hr>
+
+
+        <p>
+            <strong>Date:</strong>
+
+            <span th:text="${#temporals.format(
+                interview.scheduledAt,
+                'dd-MM-yyyy'
+            )}">
+                15-08-2026
+            </span>
+        </p>
+
+
+        <p>
+            <strong>Time:</strong>
+
+            <span th:text="${#temporals.format(
+                interview.scheduledAt,
+                'HH:mm'
+            )}">
+                14:30
+            </span>
+        </p>
+
+
+        <p>
+            <strong>Interview Type:</strong>
+
+            <span th:text="${interview.type}">
+                ONLINE
+            </span>
+        </p>
+
+
+        <p th:if="${interview.location != null
+                   and !#strings.isEmpty(interview.location)}">
+
+            <strong>Location:</strong>
+
+            <span th:text="${interview.location}">
+                Sofia Office
+            </span>
+
+        </p>
+
+
+        <p th:if="${interview.meetingLink != null
+                   and !#strings.isEmpty(interview.meetingLink)}">
+
+            <strong>Meeting Link:</strong>
+
+            <a th:href="${interview.meetingLink}"
+               target="_blank"
+               rel="noopener noreferrer">
+                Open Meeting
+            </a>
+
+        </p>
+
+
+        <p th:if="${interview.createdOn != null}">
+
+            <strong>Created On:</strong>
+
+            <span th:text="${#temporals.format(
+                interview.createdOn,
+                'dd-MM-yyyy HH:mm'
+            )}">
+                10-08-2026 11:00
+            </span>
+
+        </p>
+
+
+        <p th:if="${interview.updatedOn != null}">
+
+            <strong>Last Updated:</strong>
+
+            <span th:text="${#temporals.format(
+                interview.updatedOn,
+                'dd-MM-yyyy HH:mm'
+            )}">
+                11-08-2026 09:30
+            </span>
+
+        </p>
+
+        <hr>
+
+
+        <div class="d-flex gap-2 flex-wrap">
+
+            <a class="btn btn-warning"
+               th:if="${interview.status.name() == 'SCHEDULED'
+                      or interview.status.name() == 'CONFIRMED'}"
+               th:href="@{/interviews/{id}/edit(id=${interview.id})}">
+                Reschedule
+            </a>
+
+
+            <form th:if="${interview.status.name() == 'SCHEDULED'
+                         or interview.status.name() == 'CONFIRMED'}"
+                  th:action="@{/interviews/{id}/cancel(id=${interview.id})}"
+                  method="post"
+                  class="d-inline">
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    Cancel Interview
+                </button>
+
+            </form>
+
+
+            <a class="btn btn-secondary"
+               th:href="@{/interviews}">
+                Back to Interviews
+            </a>
+
+        </div>
+
+    </div>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

@@ -3,19 +3,12 @@ package app.model.dto.interview;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateInterviewRequest {
-
-    private UUID jobApplicationId;
-
-    private UUID candidateId;
-
-    private UUID recruiterId;
+public class UpdateInterviewRequest {
 
     private LocalDateTime scheduledAt;
 

@@ -2,6 +2,7 @@ package app.service.interview.client;
 
 import app.model.dto.interview.CreateInterviewRequest;
 import app.model.dto.interview.InterviewResponse;
+import app.model.dto.interview.UpdateInterviewRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,22 +18,53 @@ public interface InterviewClient {
 
     String X_API_KEY = "X-API-Key";
 
-    @PostMapping("/api/interviews")
+    @PostMapping()
     InterviewResponse createInterview(
             @RequestBody CreateInterviewRequest request,
             @RequestHeader(X_API_KEY) String xAPIKey
 
     );
 
-    @GetMapping("/api/interviews/{id}")
+    @GetMapping("/{id}")
     InterviewResponse getInterview(
             @PathVariable UUID id,
             @RequestHeader(X_API_KEY) String xAPIKey
     );
 
-    @GetMapping("/api/interviews/recruiter/{recruiterId}")
+    @GetMapping("/recruiter/{recruiterId}")
     List<InterviewResponse> getRecruiterInterviews(
             @PathVariable UUID recruiterId,
+            @RequestHeader(X_API_KEY) String xAPIKey
+    );
+
+    @GetMapping("/api/interviews/candidate/{candidateId}")
+    List<InterviewResponse> getCandidateInterviews(
+            @PathVariable UUID candidateId,
+            @RequestHeader(X_API_KEY) String xAPIKey
+    );
+
+    @PutMapping("/api/interviews/{id}")
+    InterviewResponse updateInterview(
+            @PathVariable UUID id,
+            @RequestBody UpdateInterviewRequest request,
+            @RequestHeader(X_API_KEY) String xAPIKey
+    );
+
+    @PutMapping("/api/interviews/{id}/confirm")
+    InterviewResponse confirmInterview(
+            @PathVariable UUID id,
+            @RequestHeader(X_API_KEY) String xAPIKey
+    );
+
+    @PutMapping("/api/interviews/{id}/decline")
+    InterviewResponse declineInterview(
+            @PathVariable UUID id,
+            @RequestHeader(X_API_KEY) String xAPIKey
+    );
+
+    @PutMapping("/api/interviews/{id}/cancel")
+    InterviewResponse cancelInterview(
+            @PathVariable UUID id,
             @RequestHeader(X_API_KEY) String xAPIKey
     );
 }
