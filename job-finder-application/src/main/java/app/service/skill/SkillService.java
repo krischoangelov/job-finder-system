@@ -1,5 +1,8 @@
 package app.service.skill;
 
+import app.exception.skill.SkillAccessDeniedException;
+import app.exception.skill.SkillNotFoundException;
+import app.exception.user.UserNotFoundException;
 import app.model.dto.skill.SkillDTO;
 import app.model.entity.skill.Skill;
 import app.model.entity.user.User;
@@ -33,7 +36,7 @@ public class SkillService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.warn("Cannot create skill because userId={} was not found", userId);
-                    return new RuntimeException("User not found");
+                    return new UserNotFoundException(userId);
                 });
 
         Skill skill = Skill.builder()
@@ -54,7 +57,7 @@ public class SkillService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.warn("Cannot retrieve skills because userId={} was not found", userId);
-                    return new RuntimeException("No such user was found");
+                    return new UserNotFoundException(userId);
                 });
 
         List<SkillDTO> skills = skillRepository.findByUser(user)
@@ -71,12 +74,12 @@ public class SkillService {
         Skill skill = skillRepository.findById(skillId)
                 .orElseThrow(() -> {
                     log.warn("Skill id={} was not found", skillId);
-                    return new RuntimeException("No such skill was found");
+                    return new SkillNotFoundException(skillId);
                 });
 
         if (!skill.getUser().getId().equals(userId)) {
             log.warn("Unauthorized access attempt by userId={} for skillId={}", userId, skillId);
-            throw new RuntimeException("You are not allowed to edit this skill");
+            throw new SkillAccessDeniedException(userId.toString());
         }
 
         log.info("Skill id={} successfully retrieved by userId={}", skillId, userId);
@@ -89,12 +92,12 @@ public class SkillService {
         Skill skill = skillRepository.findById(skillId)
                 .orElseThrow(() -> {
                     log.warn("Cannot update skill because skillId={} was not found", skillId);
-                    return new RuntimeException("No such skill was found");
+                    return new SkillNotFoundException(skillId);
                 });
 
         if (!skill.getUser().getId().equals(userId)) {
             log.warn("Unauthorized update attempt by userId={} for skillId={}", userId, skillId);
-            throw new RuntimeException("You are not allowed to edit this skill");
+            throw new SkillAccessDeniedException(userId.toString());
         }
 
         skill.setName(skillDTO.getName());
@@ -111,12 +114,12 @@ public class SkillService {
         Skill skill = skillRepository.findById(skillId)
                 .orElseThrow(() -> {
                     log.warn("Cannot delete skill because skillId={} was not found", skillId);
-                    return new RuntimeException("Skill not found");
+                    return new SkillNotFoundException(skillId);
                 });
 
         if (!skill.getUser().getId().equals(userId)) {
             log.warn("Unauthorized delete attempt by userId={} for skillId={}", userId, skillId);
-            throw new RuntimeException("You are not allowed to delete this skill");
+            throw new SkillAccessDeniedException(userId.toString());
         }
 
         skillRepository.delete(skill);

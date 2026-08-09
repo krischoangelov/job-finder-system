@@ -1,5 +1,9 @@
 package app.service.user;
 
+import app.exception.user.PasswordMismatchException;
+import app.exception.user.RecruiterAccessRequiredException;
+import app.exception.user.UserAlreadyExistsException;
+import app.exception.user.UserNotFoundException;
 import app.model.dto.jobapplication.JobApplicationDTO;
 import app.model.dto.user.UserDTO;
 import app.model.dto.user.UserLoginRequestDTO;
@@ -50,12 +54,12 @@ public class UserService implements UserDetailsService {
         Optional<User> user = userRepository.findByUsername(userRegisterRequest.getUsername());
         if (user.isPresent()) {
             log.warn("Registration failed because username={} already exists", userRegisterRequest.getUsername());
-            throw new RuntimeException("User with this username already exists");
+            throw new UserAlreadyExistsException(userRegisterRequest.getUsername());
         }
 
         if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())) {
             log.warn("Registration failed because passwords do not match for username={}", userRegisterRequest.getUsername());
-            throw new RuntimeException("Passwords do not match");
+            throw new PasswordMismatchException();
         }
 
         String encodedPassword = passwordEncoder.encode(userRegisterRequest.getPassword());
@@ -74,7 +78,7 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findById(uuid)
                 .orElseThrow(() -> {
                     log.warn("User with id={} was not found", uuid);
-                    return new RuntimeException("No such user was found");
+                    return new UserNotFoundException(uuid);
                 });
 
         log.info("User with id={} retrieved successfully", uuid);
@@ -87,7 +91,7 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Cannot update profile because userId={} was not found", id);
-                    return new RuntimeException("User with the searched ID does not exist");
+                    return new UserNotFoundException(id);
                 });
 
         user.setUsername(userUpdateProfileRequest.getUsername());
@@ -104,12 +108,12 @@ public class UserService implements UserDetailsService {
         User recruiter = userRepository.findById(recruiterId)
                 .orElseThrow(() -> {
                     log.warn("Cannot retrieve candidates because recruiterId={} was not found", recruiterId);
-                    return new RuntimeException("Recruiter with the searched ID does not exist");
+                    return new UserNotFoundException(recruiterId);
                 });
 
         if (!recruiter.getRole().equals(UserRole.RECRUITER)) {
             log.warn("UserId={} attempted to view candidates without RECRUITER role", recruiterId);
-            throw new RuntimeException("Only recruiters can view candidates");
+            throw new RecruiterAccessRequiredException(recruiterId.toString());
         }
 
         List<UserDTO> candidates = recruiter.getCreatedJobs()
