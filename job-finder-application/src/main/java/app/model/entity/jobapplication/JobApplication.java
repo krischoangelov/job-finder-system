@@ -4,6 +4,8 @@ import app.model.entity.joboffer.JobOffer;
 import app.model.entity.user.User;
 import app.model.enums.ApplicationStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -21,18 +23,24 @@ public class JobApplication {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @NotNull
+    @Size(min = 50, max = 1000)
+    @Column(nullable = false, length = 1000)
     private String motivationLetter;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
+    @NotNull
     private LocalDateTime appliedAt;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "candidate_id", nullable = false)
     private User candidate;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "job_offer_id", nullable = false)
     private JobOffer jobOffer;
