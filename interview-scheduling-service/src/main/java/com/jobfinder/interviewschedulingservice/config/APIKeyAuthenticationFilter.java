@@ -1,6 +1,7 @@
 package com.jobfinder.interviewschedulingservice.config;
 
 
+import com.jobfinder.interviewschedulingservice.exception.InvalidAPIKeyException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,11 +30,11 @@ public class APIKeyAuthenticationFilter extends OncePerRequestFilter {
             String APIKey = request.getHeader(X_API_KEY);
 
             if (APIKey == null || APIKey.isBlank()) {
-                throw new RuntimeException("Missing API key header!");
+                throw new InvalidAPIKeyException("Missing API key header!", HttpStatus.UNAUTHORIZED);
             }
 
             if (!APIKey.equals(validAPIKey)) {
-                throw new RuntimeException("Invalid API key!");
+                throw new InvalidAPIKeyException("Invalid API key!", HttpStatus.FORBIDDEN);
             }
 
             Authentication authentication = new APIKeyAuthentication(APIKey);
@@ -41,8 +42,8 @@ public class APIKeyAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
 
-        } catch (RuntimeException e) {
-//            response.setStatus(e.getHttpStatus().value());
+        } catch (InvalidAPIKeyException e) {
+            response.setStatus(e.getHttpStatus().value());
             response.getWriter().write(e.getMessage());
         }
 

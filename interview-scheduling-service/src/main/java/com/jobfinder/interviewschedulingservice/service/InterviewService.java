@@ -1,5 +1,6 @@
 package com.jobfinder.interviewschedulingservice.service;
 
+import com.jobfinder.interviewschedulingservice.exception.InterviewNotFoundException;
 import com.jobfinder.interviewschedulingservice.model.dto.CreateInterviewRequest;
 import com.jobfinder.interviewschedulingservice.model.dto.InterviewResponse;
 
@@ -54,7 +55,7 @@ public class InterviewService {
 
                     log.warn("Interview not found with id={}", id);
 
-                    return new RuntimeException("Interview with this ID was not found");
+                    return new InterviewNotFoundException("Interview with this ID was not found");
                 });
 
         log.info("Interview with id={} was found", interview.getId());
@@ -94,7 +95,7 @@ public class InterviewService {
 
                     log.warn("Cannot update interview because id={} was not found", id);
 
-                    return new RuntimeException("Interview with this ID was not found");
+                    return new InterviewNotFoundException("Interview with this ID was not found");
                 });
 
         interview.setInterviewDate(request.getScheduledAt().toLocalDate());
@@ -118,7 +119,7 @@ public class InterviewService {
 
                     log.warn("Cannot confirm interview because id={} was not found", id);
 
-                    return new RuntimeException("Interview with this ID was not found");
+                    return new InterviewNotFoundException("Interview with this ID was not found");
                 });
 
         interview.setStatus(InterviewStatus.CONFIRMED);
@@ -138,7 +139,7 @@ public class InterviewService {
 
                     log.warn("Cannot decline interview because id={} was not found", id);
 
-                    return new RuntimeException("Interview with this ID was not found");
+                    return new InterviewNotFoundException("Interview with this ID was not found");
                 });
 
         interview.setStatus(InterviewStatus.DECLINED);
@@ -158,7 +159,7 @@ public class InterviewService {
 
                     log.warn("Cannot cancel interview because id={} was not found", id);
 
-                    return new RuntimeException("Interview with this ID was not found");
+                    return new InterviewNotFoundException("Interview with this ID was not found");
                 });
 
         interview.setStatus(InterviewStatus.CANCELLED);
