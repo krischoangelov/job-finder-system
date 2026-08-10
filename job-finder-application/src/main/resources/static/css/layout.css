@@ -44,7 +44,6 @@ main {
 
 .hero {
     min-height: 80vh;
-    background-image: url("/images/hero.jpg");
     background-position: center;
     background-size: cover;
     display: flex;

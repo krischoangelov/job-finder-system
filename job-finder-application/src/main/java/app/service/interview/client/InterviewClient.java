@@ -37,32 +37,32 @@ public interface InterviewClient {
             @RequestHeader(X_API_KEY) String xAPIKey
     );
 
-    @GetMapping("/api/interviews/candidate/{candidateId}")
+    @GetMapping("/candidate/{candidateId}")
     List<InterviewResponse> getCandidateInterviews(
             @PathVariable UUID candidateId,
             @RequestHeader(X_API_KEY) String xAPIKey
     );
 
-    @PutMapping("/api/interviews/{id}")
+    @PutMapping("/{id}")
     InterviewResponse updateInterview(
             @PathVariable UUID id,
             @RequestBody UpdateInterviewRequest request,
             @RequestHeader(X_API_KEY) String xAPIKey
     );
 
-    @PutMapping("/api/interviews/{id}/confirm")
+    @PutMapping("/{id}/confirm")
     InterviewResponse confirmInterview(
             @PathVariable UUID id,
             @RequestHeader(X_API_KEY) String xAPIKey
     );
 
-    @PutMapping("/api/interviews/{id}/decline")
+    @PutMapping("/{id}/decline")
     InterviewResponse declineInterview(
             @PathVariable UUID id,
             @RequestHeader(X_API_KEY) String xAPIKey
     );
 
-    @PutMapping("/api/interviews/{id}/cancel")
+    @PutMapping("/{id}/cancel")
     InterviewResponse cancelInterview(
             @PathVariable UUID id,
             @RequestHeader(X_API_KEY) String xAPIKey
