@@ -1,9 +1,11 @@
 package app.repository.jobapplication;
 
 import app.model.entity.jobapplication.JobApplication;
+import app.model.enums.ApplicationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,4 +17,8 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     List<JobApplication> findByJobOfferRecruiterId(UUID recruiterId);
 
     boolean existsByCandidateIdAndJobOfferId(UUID candidateId, UUID jobOfferIdr);
+
+    List<JobApplication> findAllByStatus(ApplicationStatus status);
+
+    List<JobApplication> findAllByStatusAndAppliedAtBefore(ApplicationStatus status, LocalDateTime appliedAt);
 }

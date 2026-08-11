@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -227,5 +228,47 @@ public class JobApplicationService {
         jobApplicationRepository.save(application);
 
         log.info("ApplicationId={} successfully REJECTED by recruiterId={}", applicationId, recruiterId);
+    }
+
+
+    //Methods for Scheduler Jobs
+
+
+    public int deleteOldWithdrawnApplications() {
+
+        LocalDateTime threshold = LocalDateTime.now().minusDays(90);
+
+        List<JobApplication> oldWithdrawnApplications =
+                jobApplicationRepository.findAllByStatusAndAppliedAtBefore(
+                        ApplicationStatus.WITHDRAWN,
+                        threshold
+                );
+
+        jobApplicationRepository.deleteAll(oldWithdrawnApplications);
+
+        log.info("Deleted {} withdrawn applications older than 90 days", oldWithdrawnApplications.size());
+
+        return oldWithdrawnApplications.size();
+    }
+
+    public int rejectExpiredPendingApplications() {
+
+        List<JobApplication> pendingApplications =
+                jobApplicationRepository.findAllByStatus(ApplicationStatus.PENDING);
+
+        List<JobApplication> expiredApplications =
+                pendingApplications.stream()
+                        .filter(application ->
+                                application.getJobOffer().getDeadline().isBefore(LocalDate.now()))
+                        .toList();
+
+        expiredApplications.forEach(application ->
+                application.setStatus(ApplicationStatus.REJECTED));
+
+        jobApplicationRepository.saveAll(expiredApplications);
+
+        log.info("Automatically rejected {} pending applications because their job offer deadline expired", expiredApplications.size());
+
+        return expiredApplications.size();
     }
 }
