@@ -1,21 +1,16 @@
 package com.jobfinder.interviewschedulingservice.service;
 
-import com.jobfinder.interviewschedulingservice.exception.APIException;
+
 import com.jobfinder.interviewschedulingservice.exception.GlobalExceptionHandler;
 import com.jobfinder.interviewschedulingservice.exception.InterviewNotFoundException;
 import com.jobfinder.interviewschedulingservice.model.dto.CreateInterviewRequest;
-import com.jobfinder.interviewschedulingservice.model.dto.ErrorResponseDTO;
 import com.jobfinder.interviewschedulingservice.model.dto.InterviewResponse;
-import com.jobfinder.interviewschedulingservice.model.entity.Interview;
 import com.jobfinder.interviewschedulingservice.model.enums.InterviewStatus;
-import com.jobfinder.interviewschedulingservice.repository.InterviewRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -24,12 +19,12 @@ import java.util.UUID;
 
 import static com.jobfinder.interviewschedulingservice.factory.InterviewFactory.createRequest;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+
 
 @ActiveProfiles("test")
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class InterviewServiceIntegrationTest {
+class InterviewServiceUnitTest {
 
     @Autowired
     private InterviewService interviewService;

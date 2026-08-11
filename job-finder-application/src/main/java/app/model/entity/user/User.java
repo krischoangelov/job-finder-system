@@ -41,7 +41,6 @@ public class User {
     @Column(nullable = false, length = 50)
     private String lastName;
 
-    @NonNull
     @Column(nullable = false)
     private String profilePicture;
 
