@@ -5,8 +5,6 @@ import app.model.entity.user.User;
 import app.model.enums.UserRole;
 import app.service.user.AuthenticationUserDetails;
 import lombok.experimental.UtilityClass;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

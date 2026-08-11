@@ -1,12 +1,8 @@
 package app.web.joboffer;
 
 import app.controller.joboffer.JobOfferController;
-import app.controller.user.UserController;
-import app.model.dto.joboffer.CreateJobOfferRequest;
 import app.model.dto.joboffer.JobOfferDTO;
 import app.model.dto.user.UserDTO;
-import app.model.enums.EmploymentType;
-import app.model.enums.UserRole;
 import app.service.joboffer.JobOfferService;
 import app.service.user.AuthenticationUserDetails;
 import app.service.user.UserService;

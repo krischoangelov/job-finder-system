@@ -1,6 +1,5 @@
 package app.service.user;
 
-import app.exception.user.RecruiterAccessRequiredException;
 import app.exception.user.UserNotFoundException;
 import app.model.dto.user.UserDTO;
 import app.model.dto.user.UserUpdateProfileRequest;

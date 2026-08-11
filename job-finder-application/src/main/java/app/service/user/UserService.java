@@ -6,7 +6,6 @@ import app.exception.user.UserAlreadyExistsException;
 import app.exception.user.UserNotFoundException;
 import app.model.dto.jobapplication.JobApplicationDTO;
 import app.model.dto.user.UserDTO;
-import app.model.dto.user.UserLoginRequestDTO;
 import app.model.dto.user.UserRegisterRequestDTO;
 import app.model.dto.user.UserUpdateProfileRequest;
 import app.model.entity.jobapplication.JobApplication;
@@ -39,15 +38,6 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-//    public UserDTO login(UserLoginRequestDTO userLoginRequest) {
-//       User user = userRepository.findByUsername(userLoginRequest.getUsername()).orElse(null);
-//
-//       if (user == null || !passwordEncoder.matches(userLoginRequest.getPassword(), user.getPassword())) {
-//           throw new RuntimeException("Email or password is invalid.");
-//       }
-//
-//        return Mapper.toUserDTO(user);
-//    }
 
     public UserDTO register(UserRegisterRequestDTO userRegisterRequest) {
 

@@ -7,13 +7,11 @@ import app.model.enums.UserRole;
 import app.service.joboffer.JobOfferService;
 import app.service.user.AuthenticationUserDetails;
 import app.service.user.UserService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

@@ -7,7 +7,6 @@ import app.model.enums.UserRole;
 import app.service.jobapplication.JobApplicationService;
 import app.service.user.AuthenticationUserDetails;
 import app.service.user.UserService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;

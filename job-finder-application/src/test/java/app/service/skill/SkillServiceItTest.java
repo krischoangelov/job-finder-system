@@ -7,7 +7,6 @@ import app.model.dto.skill.SkillDTO;
 import app.model.entity.skill.Skill;
 import app.model.entity.user.User;
 import app.model.enums.ProficiencyLevel;
-import app.model.enums.UserRole;
 import app.repository.skill.SkillRepository;
 import app.repository.user.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 

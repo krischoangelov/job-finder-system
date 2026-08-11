@@ -7,7 +7,6 @@ import app.service.user.AuthenticationUserDetails;
 import app.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.UUID;
 
 @Controller
 public class IndexController {
@@ -47,23 +45,6 @@ public class IndexController {
         return modelAndView;
     }
 
-//    @PostMapping("/login")
-//    public ModelAndView login(@Valid UserLoginRequestDTO userLoginRequest, BindingResult bindingResult,
-//                              HttpSession httpSession) {
-//
-//        if (bindingResult.hasErrors()) {
-//            return new ModelAndView("login");
-//        }
-//
-//        UserDTO user = userService.login(userLoginRequest);
-//        httpSession.setAttribute("user_id", user.getId());
-//
-//        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.addObject("userLoginRequest", userLoginRequest);
-//        modelAndView.setViewName("redirect:/home");
-//
-//        return modelAndView;
-//    }
 
     @GetMapping("/home")
     public ModelAndView getHomePage() {
